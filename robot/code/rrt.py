@@ -3,6 +3,11 @@ import cozmo
 from cmap import *
 from gui import *
 from utils import *
+from random import *
+from time import sleep
+
+import asyncio
+from cozmo.util import degrees, distance_mm, Speed, radians
 
 MAX_NODES = 20000
 
@@ -23,12 +28,18 @@ def step_from_to(node0, node1, limit=75):
     #    limit units at most
     # 3. Hint: please consider using np.arctan2 function to get vector angle
     # 4. Note: remember always return a Node object
+    distance = get_dist(node0, node1)
+    if ( distance <= limit):
+        return node1
+    newx = (((node1.x - node0.x)/distance)*limit) + node0.x
+    newy = (((node1.y - node0.y) / distance) * limit) + node0.y
+    node1 = Node((newx, newy))
     return node1
     ############################################################################
 
 
 def node_generator(cmap):
-    rand_node = None
+    rand_node = Node([-1,-1])
     ############################################################################
     # TODO: please enter your code below.
     # 1. Use CozMap width and height to get a uniformly distributed random node
@@ -36,6 +47,9 @@ def node_generator(cmap):
     #    legitimacy of the random node.
     # 3. Note: remember always return a Node object
     pass
+    map_width, map_height = cmap.get_size()
+    while not cmap.is_inbound(rand_node) and not cmap.is_inside_obstacles(rand_node):
+        rand_node = Node([randint(0, map_width),randint(0, map_height)])
     ############################################################################
     return rand_node
 
@@ -57,6 +71,16 @@ def RRT(cmap, start):
         rand_node = None
         nearest_node = None
         pass
+        rand_node = cmap.get_random_valid_node()
+
+        thenodes = cmap.get_nodes()
+        for n in thenodes:
+            if nearest_node is None:
+                nearest_node = n
+            if get_dist(rand_node, n) < get_dist(rand_node, nearest_node):
+                nearest_node = n
+        theLimit = 75
+        rand_node = step_from_to(nearest_node, rand_node, limit = theLimit)
         ########################################################################
         sleep(0.01)
         cmap.add_path(nearest_node, rand_node)
@@ -79,6 +103,42 @@ async def CozmoPlanning(robot: cozmo.robot.Robot):
     ########################################################################
     # TODO: please enter your code below.
     # Description of function provided in instructions
+    await robot.set_head_angle(degrees(-5)).wait_for_completed()
+    robot.move_lift(-5)
+
+    cubes = None
+    try:
+        cubes = await robot.world.wait_until_observe_num_objects(num=3, object_type=cozmo.objects.LightCube, timeout=1)
+    except asyncio.TimeoutError:
+        print("Cube not found")
+
+    print(cubes)
+
+    # while True:
+    #     try:
+    #         cubes = await robot.world.wait_until_observe_num_objects(num=3, object_type=cozmo.objects.LightCube, timeout=1)
+    #     except asyncio.TimeoutError:
+    #         print("Cube not found")
+    #     if cubes:
+    #         print("x:", cubes[0].pose.position.x, " y:", cubes[0].pose.position.y, " z:", cubes[0].pose.position.z)
+    cmap.add_goal(Node((500,350)))
+    nodes = [Node((280,160)), Node((320,160)), Node((320,340)), Node((280,340))]
+    cmap.add_obstacle(nodes)
+
+    # if cubes:
+    #     for cube in cubes:
+    #         x = int(round(cube.pose.position.x))
+    #         y = int(round(cube.pose.position.y))
+    #         if cube.object_id == 3:
+    #             cmap.add_goal(Node((x,y)))
+    #         else:
+    #             nodes = [Node((x-20,y-20)), Node((x+20,y-20)), Node((x-20,y+20)), Node((x+20,y+20))]
+    #             cmap.add_obstacle(nodes)
+
+    RRTThread().start()
+
+    # action = robot.drive_straight(distance_mm(30), Speed(1000), should_play_anim=False)
+    # await action.wait_for_completed()
 
     
 

@@ -27,16 +27,8 @@ def step_from_to(node0, node1, limit=75):
     distance = get_dist(node0, node1)
     if ( distance <= limit):
         return node1
-    #print("this is arctan")
-    #print (np.arctan2((node0.x, node1.x),(node0.y, node1.y)))
-    #vector math is easier....
     newx = (((node1.x - node0.x)/distance)*limit) + node0.x
     newy = (((node1.y - node0.y) / distance) * limit) + node0.y
-    # print("math check")
-    # print(distance)
-    # print(get_dist(node0,Node((newx,newy))))
-    # print(node0.x, " ", newx, " ", node1.x)
-    # print(node0.y, " ", newy, " ", node1.y)
     node1 = Node((newx, newy))
     return node1
 
@@ -52,17 +44,9 @@ def node_generator(cmap):
     #    legitimacy of the random node.
     # 3. Note: remember always return a Node object
     pass
-
-
     map_width, map_height = cmap.get_size()
-    #print(map_width, map_height)
-
     while not cmap.is_inbound(rand_node) and not cmap.is_inside_obstacles(rand_node):
         rand_node = Node([randint(0, map_width),randint(0, map_height)])
-
-
-
-    #print(rand_node.x, " ", rand_node.y)
     ############################################################################
     return rand_node
 
@@ -88,18 +72,13 @@ def RRT(cmap, start):
 
         thenodes = cmap.get_nodes()
         for n in thenodes:
-            #print(n.x," ", n.y)
             if nearest_node is None:
                 nearest_node = n
             if get_dist(rand_node, n) < get_dist(rand_node, nearest_node):
                 nearest_node = n
-        #print("nearest node")
-        #print(nearest_node.x, nearest_node.y)
         theLimit = 75
         rand_node = step_from_to(nearest_node, rand_node, limit = theLimit)
-        #print("hello")
         ########################################################################
-        #print("hello")
         sleep(0.01)
         cmap.add_path(nearest_node, rand_node)
         if cmap.is_solved():
