@@ -40,11 +40,11 @@ class goTo:
             action = robot.turn_in_place(radians(newRad - oldRad))
             action.wait_for_completed()
 
-            isNewNode = checkNewNode(robot)
+            isNewNode = checkNewNode(robot, cmap, fromNode, toNode)
             if isNewNode:
                 return "goTo", robot
 
-            action = robot.drive_straight(distance_mm(get_dist(fromNode, toNode)), Speed(1000), should_play_anim=False)
+            action = robot.drive_straight(distance_mm(get_dist(fromNode, toNode)), Speed(1000 * .75), should_play_anim=False)
             action.wait_for_completed()
             print(robot.pose)
 
@@ -68,7 +68,7 @@ class goTo:
         # cmap.add_obstacle(nodes)
         return "stop", robot
 
-def checkNewNode(robot):
+def checkNewNode(robot, cmap, fromNode, obstacle):
     cubes = None
     try:
         cubes = robot.world.wait_until_observe_num_objects(num=3, object_type=cozmo.objects.LightCube, timeout=1)
@@ -82,5 +82,13 @@ def checkNewNode(robot):
                 cmap.reset()
                 cmap.set_start(fromNode)
                 #todo: add new obstacle
+                distance = get_dist(fromNode, obstacle)
+                a = obstacle.coord[0]
+                b = obstacle.coord[1]
+                if (distance > 50):
+                    a = (((obstacle.x - fromNode.x)/distance)*50) + fromNode.x
+                    b = (((obstacle.y - fromNode.y) / distance) * 50) + fromNode.y
+                nodes = [Node([a-20,b-20]), Node([a+20,b-20]), Node([a+20,b+20]), Node([a-20,b+20])]
+                cmap.add_obstacle(nodes)
                 return True
         return False

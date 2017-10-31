@@ -38,6 +38,7 @@ class plan:
 
             while not targetFound:
                 action = robot.turn_in_place(degrees(30))
+                print(robot.pose.rotation.angle_z.degrees)
                 action.wait_for_completed()
                 cubes = robot.world.wait_until_observe_num_objects(num=3, object_type=cozmo.objects.LightCube, timeout=0.5)
                 if len(cubes) > 0:
@@ -45,6 +46,8 @@ class plan:
                         print(cube)
                         if cube.object_id == 1:
                             targetFound = True
+                            action = robot.turn_in_place(degrees(-1 * robot.pose.rotation.angle_z.degrees))
+                            action.wait_for_completed()
 
 
         if cubes:
@@ -52,12 +55,37 @@ class plan:
                 x = int(round(cube.pose.position.x))
                 y = int(round(cube.pose.position.y))
                 cubesSeen.append(cubesSeen, cube.object_id)
+                angle = robot.pose.rotation.angle_z.degrees
                 if cube.object_id == 1:
-                    cmap.add_goal(Node((100,200)))
+                    # cmap.add_goal(Node((300,100)))
+                    if angle > 45 and angle <= 125:
+                        cmap.add_goal(Node((325, 350)))
+                    elif angle > 125 and angle <= 125:
+                        cmap.add_goal(Node((150, 225)))
+                    elif angle >-45 and angle <= 45:
+                        cmap.add_goal(Node((560, 330)))
+                    else:
+                        cmap.add_goal(Node((325, 150)))
+
                     # cmap.add_goal(Node((x,y))) #todo: add goal with real coords
-                # else: #todo: add obstacles with real coords
-                #     nodes = [Node((x-20,y-20)), Node((x-20,y+20)), Node((x+20,y+20)), Node((x+20,y-20))]
-                #     cmap.add_obstacle(nodes)
+                else: #todo: add obstacles with real coords
+                    x = 325
+                    y = 200
+                    if angle > 45 and angle <= 125:
+                        cmap.add_goal(Node((325, 350)))
+                        x = 325
+                        y = 275
+                    elif angle > 125 and angle <= 125:
+                        cmap.add_goal(Node((150, 225)))
+                        x = 250
+                        y = 225
+                    elif angle >-45 and angle <= 45:
+                        cmap.add_goal(Node((500, 225)))
+                        x = 400
+                        y = 225
+
+                    nodes = [Node((x-20,y-20)), Node((x-20,y+20)), Node((x+20,y+20)), Node((x+20,y-20))]
+                    cmap.add_obstacle(nodes)
 
         # goal = None
         #
@@ -93,7 +121,7 @@ def moveToCoord(robot, node): #return robots current angle
 
     action = robot.turn_in_place(radians(newRad - oldRad))
     action.wait_for_completed()
-    action = robot.drive_straight(distance_mm(get_dist(parent, node)), Speed(1000), should_play_anim=False)
+    action = robot.drive_straight(distance_mm(get_dist(parent, node)), Speed(750), should_play_anim=False)
     action.wait_for_completed()
 
     return newRad
