@@ -29,15 +29,15 @@ class plan:
         cmap.add_goal(goal)
         #print(startState.x, startState.y)
         RRT(cmap, cmap.get_start())
-        path = []
-        print(cmap.get_goals())
-        for x in cmap.get_goals():
-            curr = x
-            while curr is not None:
-                path.append(curr)
-                curr = curr.parent
-        for x in path:
-            print(x.x, x.y)
+        # path = []
+        # print(cmap.get_goals())
+        # for x in cmap.get_goals():
+        #     curr = x
+        #     while curr is not None:
+        #         path.append(curr)
+        #         curr = curr.parent
+        # for x in path:
+        #     print(x.x, x.y)
         print("ending right now")
 
         return "goTo", robot

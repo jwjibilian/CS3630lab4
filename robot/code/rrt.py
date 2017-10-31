@@ -138,7 +138,7 @@ async def CozmoPlanning(robot: cozmo.robot.Robot):
     goals = cmap.get_goals()
     goal = goals[0]
     print("goal:", goal.coord)
-    await moveToCoord(robot, goal)
+    # await moveToCoord(robot, goal)
 
 
 
@@ -184,7 +184,6 @@ async def moveToCoord(robot, node): #return robots current angle
         return 0
     oldRad = await moveToCoord(robot, node.parent)
     newRad = atan2(node.coord[1] - parent.coord[1], node.coord[0] - parent.coord[0])
-    print("oldRad:", oldRad, " newRad:", newRad)
     print(node.coord)
 
     action = robot.turn_in_place(radians(newRad - oldRad))
