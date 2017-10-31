@@ -6,11 +6,8 @@ from gui import *
 from utils import *
 from random import *
 from time import sleep
-<<<<<<< HEAD
 from math import atan2
-=======
-#from code.ourutils import *
->>>>>>> a96636232affa996d6eb975c35871dfe28829bdd
+
 
 import asyncio
 from cozmo.util import degrees, distance_mm, Speed, radians
@@ -88,7 +85,7 @@ def RRT(cmap, start):
         theLimit = 80
         rand_node = step_from_to(nearest_node, rand_node, limit = theLimit)
         #######################################################################
-        sleep(0.01)
+        # sleep(0.01)
         cmap.add_path(nearest_node, rand_node)
         if cmap.is_solved():
             break
