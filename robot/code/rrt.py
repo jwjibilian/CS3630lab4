@@ -1,10 +1,12 @@
 import cozmo
 
+import TheMachine
 from cmap import *
 from gui import *
 from utils import *
 from random import *
 from time import sleep
+#from code.ourutils import *
 
 import asyncio
 from cozmo.util import degrees, distance_mm, Speed, radians
@@ -79,9 +81,9 @@ def RRT(cmap, start):
                 nearest_node = n
             if get_dist(rand_node, n) < get_dist(rand_node, nearest_node):
                 nearest_node = n
-        theLimit = 75
+        theLimit = 80
         rand_node = step_from_to(nearest_node, rand_node, limit = theLimit)
-        ########################################################################
+        #######################################################################
         sleep(0.01)
         cmap.add_path(nearest_node, rand_node)
         if cmap.is_solved():
@@ -98,13 +100,16 @@ def RRT(cmap, start):
 async def CozmoPlanning(robot: cozmo.robot.Robot):
     # Allows access to map and stopevent, which can be used to see if the GUI
     # has been closed by checking stopevent.is_set()
-    global cmap, stopevent
+    global cmap, stopevent, goal, startState, themap
 
+    startState = Node((100,75))
     ########################################################################
     # TODO: please enter your code below.
     # Description of function provided in instructions
     await robot.set_head_angle(degrees(-5)).wait_for_completed()
     robot.move_lift(-5)
+    print(cmap.get_start().x," ", cmap.get_start().y)
+    TheMachine.run(robot,cmap)
 
     cubes = None
     try:
@@ -113,6 +118,8 @@ async def CozmoPlanning(robot: cozmo.robot.Robot):
         print("Cube not found")
 
     print(cubes)
+
+
 
     # while True:
     #     try:

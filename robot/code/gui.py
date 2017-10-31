@@ -91,6 +91,10 @@ class Visualizer():
             Color is blue by default
         """
         self.canvas.delete('goal')
+        # x = 0
+        # while x < len(self.cmap._goals):
+        #     y = x+1
+        #     while self.cmap.is_collision_with_obstacles()
         for goal in self.cmap._goals:
             self.draw_color_circle(goal, '#0000DD', size=15, bg=True, tags='goal')
 
