@@ -42,9 +42,6 @@ class goTo:
 
             isNewNode = checkNewNode(robot)
             if isNewNode:
-                cmap.reset()
-                cmap.set_start(fromNode)
-                #todo: add new obstacle
                 return "goTo", robot
 
             action = robot.drive_straight(distance_mm(get_dist(fromNode, toNode)), Speed(1000), should_play_anim=False)
@@ -82,5 +79,8 @@ def checkNewNode(robot):
         for cube in cubes:
             if cube.object_id not in cubesSeen.getCubes(cubesSeen):
                 cubesSeen.append(cubesSeen, cube.object_id)
+                cmap.reset()
+                cmap.set_start(fromNode)
+                #todo: add new obstacle
                 return True
         return False
