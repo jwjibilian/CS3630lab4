@@ -10,9 +10,6 @@ import numpy as np
 
 global cmap, startState
 
-YELLOW_LOWER = np.array([68, 113, 158])
-YELLOW_UPPER = np.array([113, 195, 255])
-
 class stop:
     def getName(self):
         return "stop"

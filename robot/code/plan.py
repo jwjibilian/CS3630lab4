@@ -40,6 +40,6 @@ class plan:
             print(x.x, x.y)
         print("ending right now")
 
-        return "stop", robot
+        return "goTo", robot
 
 

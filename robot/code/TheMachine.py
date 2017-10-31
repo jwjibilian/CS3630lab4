@@ -5,6 +5,7 @@ import numpy as np
 import cozmo
 from cmap import *
 from statemachine import *
+import goTo
 
 import time
 import stopMachine
@@ -23,6 +24,8 @@ def run(robot: cozmo.robot.Robot, cmap):
     fm = StateMachine()
     fm.addState(thePlaner)
     fm.addState(stopM)
+    goToo = goTo.goTo()
+    fm.addState(goToo)
     fm.setStartState(thePlaner)
     fm.setEndState(stopM)
     fm.run(robot, cmap)
