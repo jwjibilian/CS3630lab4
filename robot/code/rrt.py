@@ -101,7 +101,7 @@ def RRT(cmap, start):
 def CozmoPlanning(robot: cozmo.robot.Robot):
     # Allows access to map and stopevent, which can be used to see if the GUI
     # has been closed by checking stopevent.is_set()
-    global cmap, stopevent, goal, startState, themap
+    global cmap, stopevent, goal, startState, themap, cubesSeenBefore
 
     startState = Node((100,75))
     ########################################################################
@@ -110,6 +110,7 @@ def CozmoPlanning(robot: cozmo.robot.Robot):
     robot.set_head_angle(degrees(-5)).wait_for_completed()
     robot.move_lift(-5)
     print(cmap.get_start().x," ", cmap.get_start().y)
+    cubesSeenBefore = [1, 2]
     TheMachine.run(robot,cmap)
 
     cubes = None
