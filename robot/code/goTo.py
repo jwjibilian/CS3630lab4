@@ -17,7 +17,8 @@ class goTo:
     def getName(self):
         return "goTo"
 
-    async def run(self, robot: cozmo.robot.Robot, cmap):
+
+    def run(self, robot: cozmo.robot.Robot, cmap):
         thestack = stack()
         goals = cmap.get_goals()
         node = goals[0]
@@ -33,10 +34,10 @@ class goTo:
 
             newRad = atan2(toNode.coord[1] - fromNode.coord[1], toNode.coord[0] - fromNode.coord[0])
 
-            await robot.turn_in_place(radians(newRad - oldRad)).wait_for_completed()
-            # action.wait_for_completed()
-            await robot.drive_straight(distance_mm(get_dist(fromNode, toNode)), Speed(1000), should_play_anim=False).wait_for_completed()
-            # action.wait_for_completed()
+            action = robot.turn_in_place(radians(newRad - oldRad))
+            action.wait_for_completed()
+            action = robot.drive_straight(distance_mm(get_dist(fromNode, toNode)), Speed(1000), should_play_anim=False)
+            action.wait_for_completed()
 
             oldRad = newRad
             fromNode = toNode

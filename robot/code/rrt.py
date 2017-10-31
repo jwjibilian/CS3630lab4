@@ -98,7 +98,7 @@ def RRT(cmap, start):
 
 
 
-async def CozmoPlanning(robot: cozmo.robot.Robot):
+def CozmoPlanning(robot: cozmo.robot.Robot):
     # Allows access to map and stopevent, which can be used to see if the GUI
     # has been closed by checking stopevent.is_set()
     global cmap, stopevent, goal, startState, themap
@@ -107,14 +107,14 @@ async def CozmoPlanning(robot: cozmo.robot.Robot):
     ########################################################################
     # TODO: please enter your code below.
     # Description of function provided in instructions
-    await robot.set_head_angle(degrees(-5)).wait_for_completed()
+    robot.set_head_angle(degrees(-5)).wait_for_completed()
     robot.move_lift(-5)
     print(cmap.get_start().x," ", cmap.get_start().y)
     TheMachine.run(robot,cmap)
 
     cubes = None
     try:
-        cubes = await robot.world.wait_until_observe_num_objects(num=3, object_type=cozmo.objects.LightCube, timeout=1)
+        cubes = robot.world.wait_until_observe_num_objects(num=3, object_type=cozmo.objects.LightCube, timeout=1)
     except asyncio.TimeoutError:
         print("Cube not found")
 

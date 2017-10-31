@@ -1,3 +1,6 @@
+import asyncio
+
+
 class StateMachine:
 
     def __init__(self):
@@ -12,6 +15,7 @@ class StateMachine:
         self.startState = item.getName()
     def setEndState(self, item):
         self.endStates.append(item.getName())
+
 
     def run(self, info, cmap):
         try:
