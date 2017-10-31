@@ -16,7 +16,7 @@ class goTo:
         return "goTo"
 
     def run(self, robot: cozmo.robot.Robot, cmap):
-        stack = Stack()
+        thething = stack()
 
         return "stop", robot
 
