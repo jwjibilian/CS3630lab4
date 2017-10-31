@@ -5,6 +5,7 @@ from gui import *
 from utils import *
 from random import *
 from time import sleep
+from math import atan2
 
 import asyncio
 from cozmo.util import degrees, distance_mm, Speed, radians
@@ -121,24 +122,72 @@ async def CozmoPlanning(robot: cozmo.robot.Robot):
     #         print("Cube not found")
     #     if cubes:
     #         print("x:", cubes[0].pose.position.x, " y:", cubes[0].pose.position.y, " z:", cubes[0].pose.position.z)
-    cmap.add_goal(Node((500,350)))
-    nodes = [Node((280,160)), Node((320,160)), Node((320,340)), Node((280,340))]
-    cmap.add_obstacle(nodes)
 
-    # if cubes:
-    #     for cube in cubes:
-    #         x = int(round(cube.pose.position.x))
-    #         y = int(round(cube.pose.position.y))
-    #         if cube.object_id == 3:
-    #             cmap.add_goal(Node((x,y)))
-    #         else:
-    #             nodes = [Node((x-20,y-20)), Node((x+20,y-20)), Node((x-20,y+20)), Node((x+20,y+20))]
-    #             cmap.add_obstacle(nodes)
+    cmap.add_goal(Node((325,225)))
+    # nodes = [Node((280,160)), Node((320,160)), Node((320,340)), Node((280,340))]
+    # cmap.add_obstacle(nodes)
+    RRT(cmap, cmap.get_start())
 
-    RRTThread().start()
+    goals = cmap.get_goals()
+    goal = goals[0]
+    print("goal:", goal.coord)
+    await moveToCoord(robot, goal)
+
+
+
+# targetFound = False
+#     if cubes:
+#         for cube in cubes:
+#             if cube.object_id == 3:
+#                 targetFound = True
+#
+#     if not targetFound:
+#         action = robot.turn_in_place(radians(0.7))
+#         await action.wait_for_completed()
+#         action = robot.drive_straight(distance_mm(300), Speed(1000), should_play_anim=False)
+#         await action.wait_for_completed()
+#
+#         look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+#
+#         try:
+#             cubes = await robot.world.wait_until_observe_num_objects(num=3, object_type=cozmo.objects.LightCube, timeout=30)
+#         except asyncio.TimeoutError:
+#             print("Cube not found")
+#         finally:
+#             look_around.stop()
+#
+#     if cubes:
+#         for cube in cubes:
+#             x = int(round(cube.pose.position.x))
+#             y = int(round(cube.pose.position.y))
+#             if cube.object_id == 3:
+#                 cmap.add_goal(Node((x,y)))
+#             else:
+#                 nodes = [Node((x-20,y-20)), Node((x+20,y-20)), Node((x-20,y+20)), Node((x+20,y+20))]
+#                 cmap.add_obstacle(nodes)
 
     # action = robot.drive_straight(distance_mm(30), Speed(1000), should_play_anim=False)
     # await action.wait_for_completed()
+
+async def moveToCoord(robot, node): #return robots current angle
+    # if block is placed in front of robot during this, may need to pass boolean to abort the rest of the movements
+    parent = node.parent
+    if parent == None:
+        print(node.coord)
+        return 0
+    oldRad = await moveToCoord(robot, node.parent)
+    newRad = atan2(node.coord[1] - parent.coord[1], node.coord[0] - parent.coord[0])
+    print("oldRad:", oldRad, " newRad:", newRad)
+    print(node.coord)
+
+    action = robot.turn_in_place(radians(newRad - oldRad))
+    await action.wait_for_completed()
+    action = robot.drive_straight(distance_mm(get_dist(parent, node)), Speed(1000), should_play_anim=False)
+    await action.wait_for_completed()
+
+    return newRad
+
+
 
     
 
